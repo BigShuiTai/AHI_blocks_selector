@@ -24,7 +24,7 @@ def search_blocks_from_files(files, lat, latspan):
         for file in files:
             if block in file:
                 selected_files.append(file)
-    return selected_blocks
+    return selected_files
 
 def search_blocks_from_format(args):
     if int(args.band) == 3:
