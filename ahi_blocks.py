@@ -19,10 +19,11 @@ def search_blocks_from_files(files, lat, latspan):
         ahi_blocks = f.read().split('\n')
     upper, lower = (lat + latspan, lat - latspan)
     selected_blocks = get_block_paths(ahi_blocks, upper, lower)
-    for i, s in enumerate(selected_blocks):
+    selected_files = []
+    for block in selected_blocks:
         for file in files:
-            if s in file:
-                selected_blocks[i] = file
+            if block in file:
+                selected_files.append(file)
     return selected_blocks
 
 def search_blocks_from_format(args):
