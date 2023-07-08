@@ -1,5 +1,7 @@
 import argparse
 
+global BZIP_FILE
+
 def get_block_paths(ahi_blocks, upper, lower):
     blocks_id = []
     for i, ahi_block in enumerate(ahi_blocks, start=1):
@@ -15,7 +17,7 @@ def get_block_paths(ahi_blocks, upper, lower):
 
 def search_blocks_from_files(files, lat, latspan):
     # get block areas
-    with open('ahi_blocks_average.txt', 'r') as f:
+    with open('ahi_blocks.txt', 'r') as f:
         ahi_blocks = f.read().split('\n')
     upper, lower = (lat + latspan, lat - latspan)
     selected_blocks = get_block_paths(ahi_blocks, upper, lower)
@@ -34,7 +36,7 @@ def search_blocks_from_format(args):
     else:
         res = '10'
     # get block areas
-    with open('ahi_blocks_average.txt', 'r') as f:
+    with open('ahi_blocks.txt', 'r') as f:
         ahi_blocks = f.read().split('\n')
     upper, lower = (
         args.latitude + args.latitude_span, 
@@ -42,7 +44,10 @@ def search_blocks_from_format(args):
     )
     selected_blocks = get_block_paths(ahi_blocks, upper, lower)
     for i, s in enumerate(selected_blocks):
-        selected_blocks[i] = f'HS_H{"%02d" % args.ahi_sat_id}_{args.time[:-4]}_{args.time[-4:]}_B{args.band}_FLDK_R{res}_{s}.DAT.bz2'
+        if BZIP_FILE:
+            selected_blocks[i] = f'HS_H{"%02d" % args.ahi_sat_id}_{args.time[:-4]}_{args.time[-4:]}_B{args.band}_FLDK_R{res}_{s}.DAT.bz2'
+        else:
+            selected_blocks[i] = f'HS_H{"%02d" % args.ahi_sat_id}_{args.time[:-4]}_{args.time[-4:]}_B{args.band}_FLDK_R{res}_{s}.DAT'
     return selected_blocks
 
 if __name__ == '__main__':
@@ -53,6 +58,8 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--band', default='13', type=str)
     parser.add_argument('-lat', '--latitude', default=0, type=float)
     parser.add_argument('-latspan', '--latitude_span', default=5, type=float)
+    parser.add_argument('-z', '--bzip', default=0, type=int)
     args = parser.parse_args()
+    BZIP_FILE = (args.bzip == 0)
     selected_blocks = search_blocks_from_format(args)
     print(' '.join(selected_blocks))
